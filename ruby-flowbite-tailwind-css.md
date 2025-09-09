@@ -1,8 +1,8 @@
 
 # 1. Instalação do Tailwind CSS e Flowbite no Ruby on Rails 8
 
-# Vídeo Tutorial
-https://www.youtube.com/watch?si=gXqCODCtUM3_xswU&v=YBAu2O7RnRI&feature=youtu.be
+
+[Vídeo Tutorial - Youtube ](https://www.youtube.com/watch?si=gXqCODCtUM3_xswU&v=YBAu2O7RnRI&feature=youtu.be)
 
 Vamos criar uma nova aplicação `Rails` configurada com **`PostgreSQL`**, **`Tailwind` `CSS`** e **`Flowbite`**, pulando a instalação do **`Jbuilder`**.
 
