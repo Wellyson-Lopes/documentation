@@ -99,4 +99,7 @@ Pronto agora o Flowbite deve está funcionando em sua aplicação, há algumas f
 ```bash
 bin/dev
 ```
-e depois que abrirmos uma página a web, podemos abrir o console com F12 ir na aba Sources  e procurar pelos arquivos flowbite.min, tailwind, flowbite.turbo dentro do diretório assets/controller, também podem pegar alguns componentes no site do flowbite https://flowbite.com/docs/components/modal/, por exemplo podemos pegar um modal colar na view  e ver se funciona.
+Depois de abrir uma página web, podemos abrir o console pressionando F12, ir até a aba Sources e procurar pelos arquivos flowbite.min, tailwind e flowbite.turbo dentro do diretório assets/controllers.
+Também é possível pegar alguns componentes diretamente no site do Flowbite, por exemplo: [Flowbite](https://flowbite.com/docs/components/modal/)
+.
+Podemos copiar um modal de lá, colar na view e verificar se ele funciona corretamente.
