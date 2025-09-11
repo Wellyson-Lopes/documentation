@@ -127,6 +127,8 @@ Este será o registro principal da entrega, podendo ter um dos seguintes status:
 
 A seguir, um fluxograma que descreve o fluxo de trabalho detalhado para o registro de uma viagem, incluindo as novas funcionalidades de intercorrência e retorno.
 
+![Fluxograma Truck Manager](/fluxograma-truck-manager.svg)
+
 ```mermaid
 flowchart TD
     %% Cores de status
