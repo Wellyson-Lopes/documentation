@@ -21,6 +21,7 @@
 	- `RSpec`
 	- `Node.js`
 	- `Yarn`
+
 # 1. Instalação de Gems Necessárias
 
 Antes de mais nada, adicione ao seu `Gemfile` as gems essenciais: Sidekiq, RSpec, pg (adaptador PostgreSQL), e ferramentas de lint (por exemplo `erb_lint`). Isto ajudará tanto no desenvolvimento quanto na manutenção do código.
@@ -106,17 +107,22 @@ REDIS_URL=redis://redis:6379/10 # Deve ser adicionado apenas para o worker
 DATABASE_URL=postgres://postgres:postgres@db:5432/app_development
 RAILS_ENV=development
 ```
+
 - Crie o arquivo `.env`, para configurar  as variáveis  de `usario` e senha do `postgres`:
+
 ```bash
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 ```
+
 - Crie o arquivo `.env.test`, para configurar as variáveis de ambiente para os testes:
+
 ```bash
 DATABASE_URL=postgres://postgres:postgres@db:5432/app_test
 REDIS_URL=redis://redis:6379/1
 RAILS_ENV=test
 ```
+
 # 4. docker-compose.yml
 
 O `docker-compose.yml` define os serviços necessários:
@@ -176,7 +182,7 @@ volumes:
 ```
 
 
- # 5. Configuração do `database.yml`
+# 5. Configuração do `database.yml`
 
 No Rails, configure `database.yml` para usar variáveis de ambiente (`DATABASE_URL`) sempre que possível, dentro do bloco `default`.  
 Isso permite reutilizar configurações entre ambientes (desenvolvimento, teste, produção) com menor duplicação.
@@ -232,6 +238,7 @@ fi
 
 exec "$@" # executa o command do container
 ```
+
 # 7. Passos de build e execução
 
 1. `docker compose build` – constrói as imagens conforme configurado.
@@ -240,27 +247,36 @@ exec "$@" # executa o command do container
 4. Caso necessário, entre no container da aplicação (`docker exec -it <nome_do_container_web> bash`) para criar banco e rodar migrações: `rails db:create`, `rails db:migrate`.
 
 - No termina na raiz do seu projeto rode o comando:
+
 ```bash
 docker compose build
 ```
+
 - O Terminal deve retornar algo semelhante a imagem a baixo com a mensagem:
+
 ```bash
 [+] Building 1/1
  ✔ web  Built   
 ```
+
 ![screenshot do sistema](20250916235622.png)
 
 - Agora para subir o servidor na porta 300 rode o comando:
+
 ```bash
 docker compose up
 ```
+
 - Deve retornar algo semelhante a imagem com a mensagem de que o servidor esta na porta 3000:
+
 ```bash
 Listening on http://0.0.0.0:3000
 ```
+
 ![screenshot do sistema](20250916235944.png)
 
 - Agora você pode abrir seu navegador na rota informada e deve retornar uma mensagem erro por falta de criação do banco de dados, algo semelhante a imagem:
+
 ![screenshot do sistema](20250917000236.png)
 
 # 8. Criando migração no db dentro do Docker
@@ -269,25 +285,35 @@ Listening on http://0.0.0.0:3000
 ```bash
 docker ps
 ```
+
 - Este comando ovai retornar uma menagem no terminal semelhante a imagem a baixo, e no campo `NAME` vai ter o nome dos containers em execução, algo semelhante a imagem a baixo, se tiver criado o container de `test` ele também deve parecer:
+
 ![screenshot do sistema](20250917000752.png)
 
 - Agora acesse o container web que em nosso caso se chama `app-web-1`, para acesso digite o comando no terminal:
 ```bash
 docker exec -it app-web-1 bash
 ```
+
 - Agora ao acessar o terminal do `docker` podemos criar nosso banco e rodar as migrações por lá com os comandos:
 - assim criamos o banco de dados:
+
 ```bash
 bundle exec rails db:create
 ```
+
 - assim rodamos migrações no banco:
+
 ```bash
 bundle exec rails db:migrate
 ```
+
 - Ao cria o banco de dados de retornar algo como:
+
 ![screenshot do sistema](20250917001735.png)
+
 - agora sim a página root do `Rails 8` deve abrir em seu navegador:
+
 ![screenshot do sistema](20250917001819.png)
 
 # 9. Finalização e próximos passos
