@@ -155,7 +155,7 @@ development:
 
 # 6. Configurando os arquivos `.sh`
 - Crie o  arquivo `setup.sh` dentro do diretório `config` e adicione o código:
-```sh
+```bash
 #! /bin/sh
 
 set -e
