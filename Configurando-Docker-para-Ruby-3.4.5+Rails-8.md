@@ -1,16 +1,16 @@
 # Documentação Configurando Docker para Ruby 3.4.5 + Rails 8
 1. Inicie um novo projeto com Tailwind baseado nesta documentação: - [Ruby + Flowbite + Tailwind](ruby-flowbite-tailwind-css.html)
 2. Esta documentação é uma base para nosso projeto: - [Projeto Truck manager](projeto-truck-manager.html)
-#
+
 -  Esta documentação serve como base para configurar um ambiente de desenvolvimento com Docker utilizando `Ruby 3.4.5`, `Rails 8`, `PostgreSQL`, `Redis`, `Sidekiq` e ferramentas de teste como `RSpec`.
 - O objetivo é preparar uma `stack` completa para desenvolvimento, testes e execução de `workers`, com exemplos de configuração de variáveis de ambiente, containers Docker, scripts de setup e dependências de sistema.
-#
+
 1. Esta documentação é uma base para nosso projeto: [[Projeto Truck Manager]]
-#
+
 2. Inicie um novo projeto com Tailwind baseado nesta documentação: [[Ruby - Flowbite - Tailwind - CSS]]
-#
+
 3. Configure o container worker para sidekiq [[Configurando Docker Worker para sidekiq no Rails 8]]
-#
+
 4. Visão Geral da `Stack`
 	Componentes principais utilizados neste setup:
 	- `Ruby 2.3.4`
@@ -21,7 +21,7 @@
 	- `RSpec`
 	- `Node.js`
 	- `Yarn`
-## 1. Instalação de Gems Necessárias
+# 1. Instalação de Gems Necessárias
 
 Antes de mais nada, adicione ao seu `Gemfile` as gems essenciais: Sidekiq, RSpec, pg (adaptador PostgreSQL), e ferramentas de lint (por exemplo `erb_lint`). Isto ajudará tanto no desenvolvimento quanto na manutenção do código.
 
@@ -41,7 +41,7 @@ gem 'pg', '~> 1.5', '>= 1.5.9'
 ```rb
 gem 'erb_lint', '~> 0.5.0'
 ```
-## 2. Arquivo Dockerfile
+# 2. Arquivo Dockerfile
 
 Este arquivo define a imagem base, instala dependências do sistema, configura timezone, cópia de código, instalação de gems, Node + Yarn, e define o comando padrão do container web. É o coração da construção da imagem Docker da sua aplicação.
 
@@ -92,7 +92,7 @@ COPY . .
 CMD ["bash", "-c", "bundle exec rails db:prepare && bundle exec rails s -b 0.0.0.0 -p 3000"]
 ```
 
-## 3. Variáveis de Ambiente
+# 3. Variáveis de Ambiente
 
 Crie arquivos como `.env.development` (e `.env.test` etc) para definir variáveis como `DATABASE_URL`, `REDIS_URL`, `RAILS_ENV`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, etc.
 
@@ -116,7 +116,7 @@ DATABASE_URL=postgres://postgres:postgres@db:5432/app_test
 REDIS_URL=redis://redis:6379/1
 RAILS_ENV=test
 ```
-## 4. docker-compose.yml
+# 4. docker-compose.yml
 
 O `docker-compose.yml` define os serviços necessários:
 
@@ -175,7 +175,7 @@ volumes:
 ```
 
 
- ## 5. Configuração do `database.yml`
+ # 5. Configuração do `database.yml`
 
 No Rails, configure `database.yml` para usar variáveis de ambiente (`DATABASE_URL`) sempre que possível, dentro do bloco `default`.  
 Isso permite reutilizar configurações entre ambientes (desenvolvimento, teste, produção) com menor duplicação.
@@ -193,7 +193,7 @@ development:
   database: app_development # Nome do banco de desenvolvimento usando também no docker-compose.yml
 ```
 
-## 6. Scripts de setup (`.sh`)
+# 6. Scripts de setup (`.sh`)
 
 Crie scripts como `config/setup_app.sh` ou `.sh` em `config` que:
 
@@ -230,7 +230,7 @@ fi
 
 exec "$@" # executa o command do container
 ```
-## 7. Passos de build e execução
+# 7. Passos de build e execução
 
 1. `docker compose build` – constrói as imagens conforme configurado.
 2. `docker compose up` – sobe os serviços conforme `docker-compose.yml`.
@@ -261,7 +261,7 @@ Listening on http://0.0.0.0:3000
 - Agora você pode abrir seu navegador na rota informada e deve retornar uma mensagem erro por falta de criação do banco de dados, algo semelhante a imagem:
 ![screenshot do sistema](20250917000236.png)
 
-## 8. Criando migração no db dentro do Docker
+# 8. Criando migração no db dentro do Docker
 
 - após subir o servidor você pode verificar quais containers estão em execução, em um novo terminal sem fechar o terminal que subiu o `docker` rode  o comando para saber o nome dos containers `on`:
 ```bash
@@ -288,7 +288,7 @@ bundle exec rails db:migrate
 - agora sim a página root do `Rails 8` deve abrir em seu navegador:
 ![screenshot do sistema](20250917001819.png)
 
-## 9. Finalização e próximos passos
+# 9. Finalização e próximos passos
 
 Depois que tudo estiver funcionando no ambiente de desenvolvimento, você pode:
 
