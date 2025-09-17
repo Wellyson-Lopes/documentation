@@ -191,7 +191,7 @@ docker compose build
 [+] Building 1/1
  ✔ web  Built   
 ```
-![[Pasted image 20250916235622.png]]
+![screenshot do sistema](20250916235622.png)
 
 - Agora para subir o servidor na porta 300 rode o comando:
 ```bash
@@ -201,10 +201,10 @@ docker compose up
 ```bash
 Listening on http://0.0.0.0:3000
 ```
-![[Pasted image 20250916235944.png]]
+![screenshot do sistema](20250916235944.png)
 
 - Agora você pode abrir seu navegador na rota informada e deve retornar uma mensagem erro por falta de criação do banco de dados, algo semelhante a imagem:
-![[Pasted image 20250917000236.png]]
+![screenshot do sistema](20250917000236.png)
 
 # 8. Criando migração no db dentro do Docker
 
@@ -213,7 +213,7 @@ Listening on http://0.0.0.0:3000
 docker ps
 ```
 - Este comando ovai retornar uma menagem no terminal semelhante a imagem a baixo, e no campo `NAME` vai ter o nome dos containers em execução, algo semelhante a imagem a baixo, se tiver criado o container de `test` ele também deve parecer:
-![[Pasted image 20250917000752.png]]
+![screenshot do sistema](20250917000752.png)
 
 - Agora acesse o container web que em nosso caso se chama `app-web-1`, para acesso digite o comando no terminal:
 ```bash
@@ -229,9 +229,9 @@ bundle exec rails db:create
 bundle exec rails db:migrate
 ```
 - Ao cria o banco de dados de retornar algo como:
-![[Pasted image 20250917001735.png]]
+![screenshot do sistema](20250917001735.png)
 - agora sim a página root do `Rails 8` deve abrir em seu navegador:
-![[Pasted image 20250917001819.png]]
+![screenshot do sistema](20250917001819.png)
 
 # 9. Finalizando
 - Com isso agora conseguirmos trabalhar em nosso projeto desenvolvendo a parte web e rodando as migrações no banco de dados, agora acesse o link para poder adicionar os containers de worker para o redis e sidekiq.
