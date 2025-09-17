@@ -50,6 +50,7 @@ Algumas coisas a destacar:
 - Uso de versão `ARG` para `Ruby`, permitindo alterar facilmente a versão se necessário.
 - Remoção de caches de pacote após instalação, para deixar imagem mais enxuta.
 - Inclusão de configuração de `timezone` para evitar divergências em logs ou `jobs` `crons`.
+
 ```dockerfile
 # syntax=docker/dockerfile:1
 
@@ -205,6 +206,7 @@ Crie scripts como `config/setup_app.sh` ou `.sh` em `config` que:
 
 Isso permite que o container se auto ajuste quando ligado ou reiniciado, e evita erros comuns de “PID já existe” ou migrações esquecidas.
 - Crie o  arquivo `setup.sh` dentro do diretório `config` e adicione o código:
+
 ```shell
 #! /bin/sh
 
