@@ -1,7 +1,18 @@
-# Configurando Docker para Ruby - 3.4.5 + Rails 8
-1. Esta documentação é uma base para nosso projeto: - [Projeto Truck manager](projeto-truck-manager.html)
-2. Inicie um novo projeto com Tailwind baseado nesta documentação: - [Ruby + Flowbite + Tailwind](ruby-flowbite-tailwind-css.html)
-3. Recursos utilizados:
+# Documentação Configurando Docker para Ruby 3.4.5 + Rails 8
+1. Inicie um novo projeto com Tailwind baseado nesta documentação: - [Ruby + Flowbite + Tailwind](ruby-flowbite-tailwind-css.html)
+2. Esta documentação é uma base para nosso projeto: - [Projeto Truck manager](projeto-truck-manager.html)
+#
+-  Esta documentação serve como base para configurar um ambiente de desenvolvimento com Docker utilizando `Ruby 3.4.5`, `Rails 8`, `PostgreSQL`, `Redis`, `Sidekiq` e ferramentas de teste como `RSpec`.
+- O objetivo é preparar uma `stack` completa para desenvolvimento, testes e execução de `workers`, com exemplos de configuração de variáveis de ambiente, containers Docker, scripts de setup e dependências de sistema.
+#
+1. Esta documentação é uma base para nosso projeto: [[Projeto Truck Manager]]
+#
+2. Inicie um novo projeto com Tailwind baseado nesta documentação: [[Ruby - Flowbite - Tailwind - CSS]]
+#
+3. Configure o container worker para sidekiq [[Configurando Docker Worker para sidekiq no Rails 8]]
+#
+4. Visão Geral da `Stack`
+	Componentes principais utilizados neste setup:
 	- `Ruby 2.3.4`
 	- `Rails 8`
 	- `Postgresql 15.7`
@@ -10,7 +21,9 @@
 	- `RSpec`
 	- `Node.js`
 	- `Yarn`
-# 1. Adicionando Gems necessárias
+## 1. Instalação de Gems Necessárias
+
+Antes de mais nada, adicione ao seu `Gemfile` as gems essenciais: Sidekiq, RSpec, pg (adaptador PostgreSQL), e ferramentas de lint (por exemplo `erb_lint`). Isto ajudará tanto no desenvolvimento quanto na manutenção do código.
 
 1. Adiciona gem do `sidekiq`:
 ```rb
@@ -28,9 +41,15 @@ gem 'pg', '~> 1.5', '>= 1.5.9'
 ```rb
 gem 'erb_lint', '~> 0.5.0'
 ```
-# 2. Configurando Dockerfile
+## 2. Arquivo Dockerfile
 
-- Vamos aqui configurar o `Dockerfile` na raiz do seu projeto para os container `web`, `db`, `teste` e `redis`:
+Este arquivo define a imagem base, instala dependências do sistema, configura timezone, cópia de código, instalação de gems, Node + Yarn, e define o comando padrão do container web. É o coração da construção da imagem Docker da sua aplicação.
+
+Algumas coisas a destacar:
+
+- Uso de versão `ARG` para `Ruby`, permitindo alterar facilmente a versão se necessário.
+- Remoção de caches de pacote após instalação, para deixar imagem mais enxuta.
+- Inclusão de configuração de `timezone` para evitar divergências em logs ou `jobs` `crons`.
 ```dockerfile
 # syntax=docker/dockerfile:1
 
@@ -73,12 +92,16 @@ COPY . .
 CMD ["bash", "-c", "bundle exec rails db:prepare && bundle exec rails s -b 0.0.0.0 -p 3000"]
 ```
 
-# 3. Configurando varáveis de ambiente
+## 3. Variáveis de Ambiente
+
+Crie arquivos como `.env.development` (e `.env.test` etc) para definir variáveis como `DATABASE_URL`, `REDIS_URL`, `RAILS_ENV`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, etc.
+
+Isso isola configurações específicas de ambiente do código, facilita alterações e mantém credenciais fora de versionamento.
 
 - Crie um arquivo chamado `.env_development` e adicione as variáveis:
 
 ```bash
-REDIS_URL=redis://redis:6379/10
+REDIS_URL=redis://redis:6379/10 # Deve ser adicionado apenas para o worker
 DATABASE_URL=postgres://postgres:postgres@db:5432/app_development
 RAILS_ENV=development
 ```
@@ -87,8 +110,22 @@ RAILS_ENV=development
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 ```
-# 4. Configurando docker-compose.yml
-- Na raiz do seu projeto procure pelo arquivo `docker-compose.yml`, agora vamos crias os containers necessários para subir nosso projeto em desenvolvimento, serão criados os containers `web`, `db` e `test` inicialmente: 
+- Crie o arquivo `.env.test`, para configurar as variáveis de ambiente para os testes:
+```bash
+DATABASE_URL=postgres://postgres:postgres@db:5432/app_test
+REDIS_URL=redis://redis:6379/1
+RAILS_ENV=test
+```
+## 4. docker-compose.yml
+
+O `docker-compose.yml` define os serviços necessários:
+
+- `web` (sua aplicação Rails)
+- `db` (PostgreSQL)
+- `test` (ambiente de teste)  
+    Possivelmente `redis` e `sidekiq` dependendo do uso de background jobs.
+
+Deve mapear portas apropriadas, dependências entre serviços, volumes para persistência de dados e compartilhamento de código para desenvolvimento.
 
 ```yml
 version: "1.0.0"
@@ -138,7 +175,10 @@ volumes:
 ```
 
 
-# 5. Configurando database.yml
+ ## 5. Configuração do `database.yml`
+
+No Rails, configure `database.yml` para usar variáveis de ambiente (`DATABASE_URL`) sempre que possível, dentro do bloco `default`.  
+Isso permite reutilizar configurações entre ambientes (desenvolvimento, teste, produção) com menor duplicação.
 
 Configure:
 ```yml
@@ -153,9 +193,18 @@ development:
   database: app_development # Nome do banco de desenvolvimento usando também no docker-compose.yml
 ```
 
-# 6. Configurando os arquivos `.sh`
-- Crie o  arquivo `setup.sh` dentro do diretório `config` e adicione o código:
+## 6. Scripts de setup (`.sh`)
 
+Crie scripts como `config/setup_app.sh` ou `.sh` em `config` que:
+
+- garantam que todas `gems` estejam instaladas (`bundle install`)
+- removam `PID` antigo de servidor, se existir
+- rodem migrações em ambientes que não sejam desenvolvimento
+- compilem ativos quando apropriado
+- finalmente executem o servidor ou comando desejado do container
+
+Isso permite que o container se auto ajuste quando ligado ou reiniciado, e evita erros comuns de “PID já existe” ou migrações esquecidas.
+- Crie o  arquivo `setup.sh` dentro do diretório `config` e adicione o código:
 ```shell
 #! /bin/sh
 
@@ -181,7 +230,12 @@ fi
 
 exec "$@" # executa o command do container
 ```
-# 7. Fazendo build do Docker
+## 7. Passos de build e execução
+
+1. `docker compose build` – constrói as imagens conforme configurado.
+2. `docker compose up` – sobe os serviços conforme `docker-compose.yml`.
+3. Verifique se os containers estão ativos com `docker ps`.
+4. Caso necessário, entre no container da aplicação (`docker exec -it <nome_do_container_web> bash`) para criar banco e rodar migrações: `rails db:create`, `rails db:migrate`.
 
 - No termina na raiz do seu projeto rode o comando:
 ```bash
@@ -207,7 +261,7 @@ Listening on http://0.0.0.0:3000
 - Agora você pode abrir seu navegador na rota informada e deve retornar uma mensagem erro por falta de criação do banco de dados, algo semelhante a imagem:
 ![screenshot do sistema](20250917000236.png)
 
-# 8. Criando migração no db dentro do Docker
+## 8. Criando migração no db dentro do Docker
 
 - após subir o servidor você pode verificar quais containers estão em execução, em um novo terminal sem fechar o terminal que subiu o `docker` rode  o comando para saber o nome dos containers `on`:
 ```bash
@@ -234,5 +288,11 @@ bundle exec rails db:migrate
 - agora sim a página root do `Rails 8` deve abrir em seu navegador:
 ![screenshot do sistema](20250917001819.png)
 
-# 9. Finalizando
-- Com isso agora conseguirmos trabalhar em nosso projeto desenvolvendo a parte web e rodando as migrações no banco de dados, agora acesse o link para poder adicionar os containers de worker para o redis e sidekiq.
+## 9. Finalização e próximos passos
+
+Depois que tudo estiver funcionando no ambiente de desenvolvimento, você pode:
+
+- adicionar containers dedicados para `workers` (`sidekiq`)
+- configurar supervisão ou `health checks`
+- preparar configuração de produção (variáveis, segurança, assets etc...)
+- documentar como executar testes automatizados, `lint` e outras ferramentas de qualidade de código
