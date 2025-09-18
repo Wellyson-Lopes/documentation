@@ -5,12 +5,6 @@
 -  Esta documentação serve como base para configurar um ambiente de desenvolvimento com Docker utilizando `Ruby 3.4.5`, `Rails 8`, `PostgreSQL`, `Redis`, `Sidekiq` e ferramentas de teste como `RSpec`.
 - O objetivo é preparar uma `stack` completa para desenvolvimento, testes e execução de `workers`, com exemplos de configuração de variáveis de ambiente, containers Docker, scripts de setup e dependências de sistema.
 
-1. Esta documentação é uma base para nosso projeto: [[Projeto Truck Manager]]
-
-2. Inicie um novo projeto com Tailwind baseado nesta documentação: [[Ruby - Flowbite - Tailwind - CSS]]
-
-3. Configure o container worker para sidekiq [[Configurando Docker Worker para sidekiq no Rails 8]]
-
 4. Visão Geral da `Stack`
 	Componentes principais utilizados neste setup:
 	- `Ruby 2.3.4`
@@ -26,22 +20,23 @@
 
 Antes de mais nada, adicione ao seu `Gemfile` as gems essenciais: Sidekiq, RSpec, pg (adaptador PostgreSQL), e ferramentas de lint (por exemplo `erb_lint`). Isto ajudará tanto no desenvolvimento quanto na manutenção do código.
 
-1. Adiciona gem do `sidekiq`:
+- Adiciona gem do `sidekiq`:
 ```rb
 gem 'sidekiq', '~> 4.1', '>= 4.1.2'
 ```
-2. Adiciona a gem `RSpec`:
+- Adiciona a gem `RSpec`:
 ```rb
 gem 'rspec', '~> 3.4'
 ```
-3. Adiciona a Gem `pg`:
+- Adiciona a Gem `pg`:
 ```rb
 gem 'pg', '~> 1.5', '>= 1.5.9'
 ```
-4. Adiciona a gem `erb_lint`:
+- Adiciona a gem `erb_lint`:
 ```rb
 gem 'erb_lint', '~> 0.5.0'
 ```
+
 # 2. Arquivo Dockerfile
 
 Este arquivo define a imagem base, instala dependências do sistema, configura timezone, cópia de código, instalação de gems, Node + Yarn, e define o comando padrão do container web. É o coração da construção da imagem Docker da sua aplicação.
