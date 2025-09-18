@@ -91,7 +91,7 @@ Crie arquivos como `.env.development` (e `.env.test` etc) para definir variávei
 
 Isso isola configurações específicas de ambiente do código, facilita alterações e mantém credenciais fora de versionamento.
 
-- Crie um arquivo chamado `.env_development` e adicione as variáveis:
+- Crie um arquivo chamado `.env.development` e adicione as variáveis:
 
 ```bash
 REDIS_URL=redis://redis:6379/10 # Deve ser adicionado apenas para o worker
