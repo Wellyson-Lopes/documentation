@@ -26,15 +26,11 @@ gem 'sidekiq', '~> 4.1', '>= 4.1.2'
 ```
 - Adiciona a gem `RSpec`:
 ```rb
-gem 'rspec', '~> 3.4'
+gem "rspec-rails", "~> 7.0"
 ```
 - Adiciona a Gem `pg`:
 ```rb
-gem 'pg', '~> 1.5', '>= 1.5.9'
-```
-- Adiciona a gem `erb_lint`:
-```rb
-gem 'erb_lint', '~> 0.5.0'
+gem "pg", "~> 1.1"
 ```
 
 # 2. Arquivo Dockerfile
