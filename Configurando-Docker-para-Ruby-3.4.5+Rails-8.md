@@ -146,7 +146,7 @@ services:
     build: .
     stdin_open: true
     tty: true
-    entrypoint: config/setup_app.sh
+    entrypoint: config/setup.sh
     command: bash -c "bin/rails tailwindcss:watch & bundle exec rails s -b 0.0.0.0 -p 3000"
     volumes:
       - .:/app
@@ -228,6 +228,12 @@ else
 fi
 
 exec "$@" # executa o command do container
+```
+
+- Depois execute o comando no terminal para dar permisão ao arquivo `/config/setup.sh`:
+
+```bash
+chmod +x config/setup.sh
 ```
 
 # 7. Passos de build e execução
