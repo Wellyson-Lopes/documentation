@@ -6,8 +6,9 @@
 -  Esta documentação serve como base para configurar um ambiente de desenvolvimento com Docker utilizando `Ruby 3.4.5`, `Rails 8`, `PostgreSQL`, `Redis`, `Sidekiq` e ferramentas de teste como `RSpec`.
 - O objetivo é preparar uma `stack` completa para desenvolvimento, testes e execução de `workers`, com exemplos de configuração de variáveis de ambiente, containers Docker, scripts de setup e dependências de sistema.
 
-4. Visão Geral da `Stack`
-    Componentes principais utilizados neste setup:
+4. Visão Geral da `Stack`:
+    - Componentes principais utilizados neste setup:
+
     - `Ruby 3.4.5`
     - `Rails 8`
     - `Postgresql 15.7`
