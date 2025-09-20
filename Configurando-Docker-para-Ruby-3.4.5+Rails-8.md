@@ -7,16 +7,25 @@
 - O objetivo é preparar uma `stack` completa para desenvolvimento, testes e execução de `workers`, com exemplos de configuração de variáveis de ambiente, containers Docker, scripts de setup e dependências de sistema.
 
 4. Visão Geral da `Stack`:
+
     - Componentes principais utilizados neste setup:
 
     - `Ruby 3.4.5`
+
     - `Rails 8`
+
     - `Postgresql 15.7`
+
     - `redis 7.0`
+
     - `Sidekiq 7.0`
+
     - `RSpec 7.0`
+
     - `Node.js 20.x`
+
     - `Yarn 1.22.1`
+
 # 1. Instalação de Gems Necessárias
 
 Antes de mais nada, adicione ao seu `Gemfile` as `gems` essenciais: Sidekiq, RSpec, `pg` (adaptador PostgreSQL). Isto ajudará tanto no desenvolvimento quanto na manutenção do código.
