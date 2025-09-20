@@ -1,6 +1,8 @@
 # RubyFlow 🚀  
 
-Bem-vindo à **RubyFlow**, um espaço criado para compartilhar conhecimento e experiências com a comunidade Ruby e Ruby on Rails no Brasil!  
+Bem-vindo à **RubyFlow**, um espaço criado para compartilhar conhecimento e experiências com a comunidade Ruby e Ruby on Rails no Brasil!
+
+![Visitas](https://visitor-badge.laobi.icu/badge?page_id=wellysonlopes.rubyflow)
 
 ---
 
