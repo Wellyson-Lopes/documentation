@@ -101,22 +101,23 @@ CMD ["bash", "-c", "bundle exec rails db:prepare && bundle exec rails server -b 
 Crie arquivos como `.env.development` (e `.env.test` etc) para definir variáveis como `DATABASE_URL`, `REDIS_URL`, `RAILS_ENV`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, etc.
 Isso isola configurações específicas de ambiente do código, facilita alterações e mantém credenciais fora de versionamento.
 
-- Crie um arquivo chamado `.env.development` e adicione as variáveis: 
+- Crie um arquivo chamado `.env.development` e adicione as variáveis:
+
 ```bash
 REDIS_URL=redis://redis:6379/10
 DATABASE_URL=postgres://postgres:postgres@db:5432/app_development
 RAILS_ENV=development
-
 ```
-  
+
 - Crie o arquivo `.env`, para configurar  as variáveis  de `usario` e senha do `postgres`:
+
 ```bash
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 ```
 
 - Crie o arquivo `.env.test`, para configurar as variáveis de ambiente para os testes:
-  
+
 ```bash
 DATABASE_URL=postgres://postgres:postgres@db:5432/app_test
 REDIS_URL=redis://redis:6379/10
