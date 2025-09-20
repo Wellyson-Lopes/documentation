@@ -65,20 +65,20 @@ CMD ["bash", "/app/worker/entrypoint.sh"]
       - .:/app #diretório da aplicação
 ```
 
-
 - agora vamos criar o arquivo `entrypoint.sh` dentro do diretório `worker`, para configurar o sidekiq e adicionar o código:
+
 ```shell
 #!/bin/sh
 
 set -e
-# roda o Sidekiq com 1 thread, usando a gem instalada pelo Bundler
-exec bundle exec sidekiq -c 1#!/bin/sh
 
+exec bundle exec sidekiq -c 1#!/bin/sh
 ```
+
 4. Configurando as rotas do sidekiq.
 - No arquivo `routes` adicione estas configurações:
 
-```ruby
+```rb
 require "sidekiq/web"
 Rails.application.routes.draw do
 
