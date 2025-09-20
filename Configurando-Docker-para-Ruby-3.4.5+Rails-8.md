@@ -8,7 +8,7 @@
 
 4. Visão Geral da `Stack`
     Componentes principais utilizados neste setup:
-    - `Ruby 2.3.4`
+    - `Ruby 3.4.5`
     - `Rails 8`
     - `Postgresql 15.7`
     - `redis 7.0`
