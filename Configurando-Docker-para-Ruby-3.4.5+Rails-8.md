@@ -1,32 +1,32 @@
 # Documentação Configurando Docker para Ruby 3.4.5 + Rails 8
 1. Inicie um novo projeto com Tailwind baseado nesta documentação: - [Ruby + Flowbite + Tailwind](ruby-flowbite-tailwind-css.html)
+3. Configure o sidekiq no Docker: - [Documentação para Sidekiq no Rails 8](Documentação-Docker-para-sidekiq-no-Rails-8.html)
 2. Esta documentação é uma base para nosso projeto: - [Projeto Truck manager](projeto-truck-manager.html)
 
 -  Esta documentação serve como base para configurar um ambiente de desenvolvimento com Docker utilizando `Ruby 3.4.5`, `Rails 8`, `PostgreSQL`, `Redis`, `Sidekiq` e ferramentas de teste como `RSpec`.
 - O objetivo é preparar uma `stack` completa para desenvolvimento, testes e execução de `workers`, com exemplos de configuração de variáveis de ambiente, containers Docker, scripts de setup e dependências de sistema.
 
 4. Visão Geral da `Stack`
-	Componentes principais utilizados neste setup:
-	- `Ruby 2.3.4`
-	- `Rails 8`
-	- `Postgresql 15.7`
-	- `redis 7`
-	- `Sidekiq`
-	- `RSpec`
-	- `Node.js`
-	- `Yarn`
-
+    Componentes principais utilizados neste setup:
+    - `Ruby 2.3.4`
+    - `Rails 8`
+    - `Postgresql 15.7`
+    - `redis 7.0`
+    - `Sidekiq 7.0`
+    - `RSpec 7.0`
+    - `Node.js 20.x`
+    - `Yarn 1.22.1`
 # 1. Instalação de Gems Necessárias
 
-Antes de mais nada, adicione ao seu `Gemfile` as gems essenciais: Sidekiq, RSpec, pg (adaptador PostgreSQL), e ferramentas de lint (por exemplo `erb_lint`). Isto ajudará tanto no desenvolvimento quanto na manutenção do código.
+Antes de mais nada, adicione ao seu `Gemfile` as `gems` essenciais: Sidekiq, RSpec, `pg` (adaptador PostgreSQL). Isto ajudará tanto no desenvolvimento quanto na manutenção do código.
 
-- Adiciona gem do `sidekiq`:
+
+- Adiciona a gem `RSpec` dentro de um grupo de `development` e `test`:
 ```rb
-gem 'sidekiq', '~> 4.1', '>= 4.1.2'
-```
-- Adiciona a gem `RSpec`:
-```rb
-gem "rspec-rails", "~> 7.0"
+group :development, :test do
+  # Use RSpec for testing [https://rspec.info/]
+  gem "rspec-rails", "~> 7.0"
+end
 ```
 - Adiciona a Gem `pg`:
 ```rb
@@ -34,7 +34,7 @@ gem "pg", "~> 1.1"
 ```
 
 # 2. Arquivo Dockerfile
-
+  
 Este arquivo define a imagem base, instala dependências do sistema, configura timezone, cópia de código, instalação de gems, Node + Yarn, e define o comando padrão do container web. É o coração da construção da imagem Docker da sua aplicação.
 
 Algumas coisas a destacar:
@@ -45,72 +45,81 @@ Algumas coisas a destacar:
 
 ```dockerfile
 # syntax=docker/dockerfile:1
+# check=error=true
 
 ARG RUBY_VERSION=3.4.5
-FROM ruby:$RUBY_VERSION-slim
-
-# Dependências do sistema
+FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
+  
+# Install dependencies
 RUN apt-get update -qq && \
     apt-get upgrade -y && \
-    apt-get install --no-install-recommends -y \
-      build-essential \
-      curl \
-      libpq-dev \
-      htop \
-      libyaml-dev \
-      tzdata && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        curl \
+        git \              
+        zsh \
+        libpq-dev \
+        htop \
+        libyaml-dev \
+        tzdata && \
+    rm -rf /var/lib/apt/lists/* 
+
+# Instalar Oh My Zsh sem pedir interação
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended 
+
+# Instalar Powerlevel10k
+RUN git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k && \
+    sed -i 's/ZSH_THEME=".*"/ZSH_THEME="powerlevel10k\/powerlevel10k"/' ~/.zshrc
+
+# Node.js + yarn
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install --global yarn \
+    && yarn set version 1.22.1
 
 # Timezone
 ENV TZ=America/Recife
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Diretório da aplicação
+# Rails app lives here
 WORKDIR /app
 
-# Copia e instala gems
+# Copy only Gemfile and install gems
 COPY Gemfile Gemfile.lock ./
-RUN bundle install --jobs 5 --retry 5
+RUN bundle install --jobs 4 --retry 4
+  
+# Copy the rest of the application code
+COPY . . 
 
-# Node.js + Yarn
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs \
-    && npm install -g yarn \
-    && yarn set version 1.22.1
+SHELL ["/bin/zsh", "-c"] 
 
-# Copia o resto da aplicação
-COPY . .
-
-# Comando padrão
-CMD ["bash", "-c", "bundle exec rails db:prepare && bundle exec rails s -b 0.0.0.0 -p 3000"]
+# Start server
+CMD ["bash", "-c", "bundle exec rails db:prepare && bundle exec rails server -b 0.0.0.0 -p 3000"]
 ```
-
 # 3. Variáveis de Ambiente
 
 Crie arquivos como `.env.development` (e `.env.test` etc) para definir variáveis como `DATABASE_URL`, `REDIS_URL`, `RAILS_ENV`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, etc.
-
 Isso isola configurações específicas de ambiente do código, facilita alterações e mantém credenciais fora de versionamento.
 
-- Crie um arquivo chamado `.env.development` e adicione as variáveis:
-
+- Crie um arquivo chamado `.env.development` e adicione as variáveis: 
 ```bash
-REDIS_URL=redis://redis:6379/10 # Deve ser adicionado apenas para o worker
+REDIS_URL=redis://redis:6379/10
 DATABASE_URL=postgres://postgres:postgres@db:5432/app_development
 RAILS_ENV=development
+
 ```
-
-- Crie o arquivo `.env`, para configurar  as variáveis  de `usario` e senha do `postgres`:
-
+  
+- Crie o arquivo `.env`, para configurar  as variáveis  de `usario` e senha do `postgres`:
 ```bash
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 ```
 
 - Crie o arquivo `.env.test`, para configurar as variáveis de ambiente para os testes:
-
+  
 ```bash
 DATABASE_URL=postgres://postgres:postgres@db:5432/app_test
-REDIS_URL=redis://redis:6379/1
+REDIS_URL=redis://redis:6379/10
 RAILS_ENV=test
 ```
 
@@ -120,15 +129,21 @@ O `docker-compose.yml` define os serviços necessários:
 
 - `web` (sua aplicação Rails)
 - `db` (PostgreSQL)
-- `test` (ambiente de teste)  
-    Possivelmente `redis` e `sidekiq` dependendo do uso de background jobs.
+- `test` (ambiente de teste)  
+- `redis`
+- `sidekiq`
 
 Deve mapear portas apropriadas, dependências entre serviços, volumes para persistência de dados e compartilhamento de código para desenvolvimento.
-
+  
 ```yml
-version: "1.0.0"
-
 services:
+
+  redis:
+    image: redis:7
+    restart: always
+    ports:
+      - "6379:6379"
+
   db:
     image: postgres:15.7
     restart: always
@@ -166,19 +181,20 @@ services:
       - db
     env_file:
       - ./.env.test
-  
 
 volumes:
   postgres_data:
 ```
 
-
 # 5. Configuração do `database.yml`
 
-No Rails, configure `database.yml` para usar variáveis de ambiente (`DATABASE_URL`) sempre que possível, dentro do bloco `default`.  
+No Rails, configure `database.yml` para usar variáveis de ambiente (`DATABASE_URL`) sempre que possível, dentro do bloco `default`.  
+
 Isso permite reutilizar configurações entre ambientes (desenvolvimento, teste, produção) com menor duplicação.
 
+
 Configure:
+
 ```yml
 default: &default
   adapter: postgresql
