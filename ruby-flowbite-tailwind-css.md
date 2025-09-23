@@ -4,16 +4,6 @@
 
 [Vídeo Tutorial - Youtube](https://www.youtube.com/watch?si=gXqCODCtUM3_xswU\&v=YBAu2O7RnRI\&feature=youtu.be)
 
-```
-<iframe width="560" height="315" 
-        src="https://www.youtube.com/watch?si=gXqCODCtUM3_xswU&v=YBAu2O7RnRI&feature=youtu.be" 
-        title="YouTube video player" 
-        frameborder="0" 
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-        allowfullscreen>
-</iframe>
-```
-
 Vamos criar uma nova aplicação `Rails` configurada com **`PostgreSQL`**, **`Tailwind`** **`CSS`** e **`Flowbite`**, pulando a instalação do **`Jbuilder`**.
 
 1. Crie a aplicação com o comando:
