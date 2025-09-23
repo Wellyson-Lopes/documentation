@@ -23,9 +23,9 @@ Sou um entusiasta da tecnologia, apaixonado por **Ruby**, e decidi criar o canal
 Aqui você encontra a documentação dos projetos que acompanham os vídeos do canal:
 
 * [Ruby + Flowbite + Tailwind](https://wellyson-1.gitbook.io/wellyson-docs/ruby-flowbite-tailwind-css)
-* [Projeto Truck Manager](projeto-truck-manager.html)
-* [Configurando Docker no Rails 8 com db e testes](Configurando-Docker-para-Ruby-3.4.5+Rails-8.html)
-* [Documentação para Sidekiq no Rails 8](Documenta%C3%A7%C3%A3o-Docker-para-sidekiq-no-Rails-8.html)
+* [Projeto Truck Manager](https://wellyson-1.gitbook.io/wellyson-docs/projeto-truck-manager)
+* [Configurando Docker no Rails 8 com db e testes](https://wellyson-1.gitbook.io/wellyson-docs/configurando-docker-para-ruby-3.4.5+rails-8)
+* [Documentação para Sidekiq no Rails 8](https://wellyson-1.gitbook.io/wellyson-docs/documentacao-docker-para-sidekiq-no-rails-8)
 
 ***
 
