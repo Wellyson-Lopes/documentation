@@ -33,6 +33,10 @@ Aqui você encontra a documentação dos projetos que acompanham os vídeos do c
 
 👉 [Acesse o canal RubyFlow no YouTube](https://www.youtube.com/@ruby_flow)
 
+{% embed url="https://www.youtube.com/@ruby_flow" %}
+
+
+
 Lá você encontra vídeos práticos, dicas e tutoriais sobre **Ruby** e **Rails**, sempre focados em exemplos reais e atualizados.
 
 ***
