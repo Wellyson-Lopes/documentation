@@ -1,57 +1,62 @@
-# Documentação Configurando Docker para Ruby 3.4.5 + Rails 8
-1. Inicie um novo projeto com Tailwind baseado nesta documentação: - [Ruby + Flowbite + Tailwind](ruby-flowbite-tailwind-css.html)
-3. Configure o sidekiq no Docker: - [Documentação para Sidekiq no Rails 8](Documentação-Docker-para-sidekiq-no-Rails-8.html)
-2. Esta documentação é uma base para nosso projeto: - [Projeto Truck manager](projeto-truck-manager.html)
+# Configurando-Docker-para-Ruby-3.4.5+Rails-8
 
--  Esta documentação serve como base para configurar um ambiente de desenvolvimento com Docker utilizando `Ruby 3.4.5`, `Rails 8`, `PostgreSQL`, `Redis`, `Sidekiq` e ferramentas de teste como `RSpec`.
-- O objetivo é preparar uma `stack` completa para desenvolvimento, testes e execução de `workers`, com exemplos de configuração de variáveis de ambiente, containers Docker, scripts de setup e dependências de sistema.
+## Documentação Configurando Docker para Ruby 3.4.5 + Rails 8
+
+1. Inicie um novo projeto com Tailwind baseado nesta documentação: - [Ruby + Flowbite + Tailwind](ruby-flowbite-tailwind-css.html)
+2. Configure o sidekiq no Docker: - [Documentação para Sidekiq no Rails 8](Documenta%C3%A7%C3%A3o-Docker-para-sidekiq-no-Rails-8.html)
+3. Esta documentação é uma base para nosso projeto: - [Projeto Truck manager](projeto-truck-manager.html)
+
+* Esta documentação serve como base para configurar um ambiente de desenvolvimento com Docker utilizando `Ruby 3.4.5`, `Rails 8`, `PostgreSQL`, `Redis`, `Sidekiq` e ferramentas de teste como `RSpec`.
+* O objetivo é preparar uma `stack` completa para desenvolvimento, testes e execução de `workers`, com exemplos de configuração de variáveis de ambiente, containers Docker, scripts de setup e dependências de sistema.
 
 4. Visão Geral da `Stack`:
 
-    - Componentes principais utilizados neste setup:
+&#x20;   \- Componentes principais utilizados neste setup:
 
-    - `Ruby 3.4.5`
+&#x20;   \- `Ruby 3.4.5`
 
-    - `Rails 8`
+&#x20;   \- `Rails 8`
 
-    - `Postgresql 15.7`
+&#x20;   \- `Postgresql 15.7`
 
-    - `redis 7.0`
+&#x20;   \- `redis 7.0`
 
-    - `Sidekiq 7.0`
+&#x20;   \- `Sidekiq 7.0`
 
-    - `RSpec 7.0`
+&#x20;   \- `RSpec 7.0`
 
-    - `Node.js 20.x`
+&#x20;   \- `Node.js 20.x`
 
-    - `Yarn 1.22.1`
+&#x20;   \- `Yarn 1.22.1`
 
-# 1. Instalação de Gems Necessárias
+## 1. Instalação de Gems Necessárias
 
 Antes de mais nada, adicione ao seu `Gemfile` as `gems` essenciais: Sidekiq, RSpec, `pg` (adaptador PostgreSQL). Isto ajudará tanto no desenvolvimento quanto na manutenção do código.
 
+* Adiciona a gem `RSpec` dentro de um grupo de `development` e `test`:
 
-- Adiciona a gem `RSpec` dentro de um grupo de `development` e `test`:
 ```rb
 group :development, :test do
   # Use RSpec for testing [https://rspec.info/]
   gem "rspec-rails", "~> 7.0"
 end
 ```
-- Adiciona a Gem `pg`:
+
+* Adiciona a Gem `pg`:
+
 ```rb
 gem "pg", "~> 1.1"
 ```
 
-# 2. Arquivo Dockerfile
-  
+## 2. Arquivo Dockerfile
+
 Este arquivo define a imagem base, instala dependências do sistema, configura timezone, cópia de código, instalação de gems, Node + Yarn, e define o comando padrão do container web. É o coração da construção da imagem Docker da sua aplicação.
 
 Algumas coisas a destacar:
 
-- Uso de versão `ARG` para `Ruby`, permitindo alterar facilmente a versão se necessário.
-- Remoção de caches de pacote após instalação, para deixar imagem mais enxuta.
-- Inclusão de configuração de `timezone` para evitar divergências em logs ou `jobs` `crons`.
+* Uso de versão `ARG` para `Ruby`, permitindo alterar facilmente a versão se necessário.
+* Remoção de caches de pacote após instalação, para deixar imagem mais enxuta.
+* Inclusão de configuração de `timezone` para evitar divergências em logs ou `jobs` `crons`.
 
 ```dockerfile
 # syntax=docker/dockerfile:1
@@ -106,12 +111,12 @@ SHELL ["/bin/zsh", "-c"]
 # Start server
 CMD ["bash", "-c", "bundle exec rails db:prepare && bundle exec rails server -b 0.0.0.0 -p 3000"]
 ```
-# 3. Variáveis de Ambiente
 
-Crie arquivos como `.env.development` (e `.env.test` etc) para definir variáveis como `DATABASE_URL`, `REDIS_URL`, `RAILS_ENV`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, etc.
-Isso isola configurações específicas de ambiente do código, facilita alterações e mantém credenciais fora de versionamento.
+## 3. Variáveis de Ambiente
 
-- Crie um arquivo chamado `.env.development` e adicione as variáveis:
+Crie arquivos como `.env.development` (e `.env.test` etc) para definir variáveis como `DATABASE_URL`, `REDIS_URL`, `RAILS_ENV`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, etc. Isso isola configurações específicas de ambiente do código, facilita alterações e mantém credenciais fora de versionamento.
+
+* Crie um arquivo chamado `.env.development` e adicione as variáveis:
 
 ```bash
 REDIS_URL=redis://redis:6379/10
@@ -119,14 +124,14 @@ DATABASE_URL=postgres://postgres:postgres@db:5432/app_development
 RAILS_ENV=development
 ```
 
-- Crie o arquivo `.env`, para configurar  as variáveis  de `usario` e senha do `postgres`:
+* Crie o arquivo `.env`, para configurar  as variáveis  de `usario` e senha do `postgres`:
 
 ```bash
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 ```
 
-- Crie o arquivo `.env.test`, para configurar as variáveis de ambiente para os testes:
+* Crie o arquivo `.env.test`, para configurar as variáveis de ambiente para os testes:
 
 ```bash
 DATABASE_URL=postgres://postgres:postgres@db:5432/app_test
@@ -134,18 +139,18 @@ REDIS_URL=redis://redis:6379/10
 RAILS_ENV=test
 ```
 
-# 4. docker-compose.yml
+## 4. docker-compose.yml
 
 O `docker-compose.yml` define os serviços necessários:
 
-- `web` (sua aplicação Rails)
-- `db` (PostgreSQL)
-- `test` (ambiente de teste)  
-- `redis`
-- `sidekiq`
+* `web` (sua aplicação Rails)
+* `db` (PostgreSQL)
+* `test` (ambiente de teste) &#x20;
+* `redis`
+* `sidekiq`
 
 Deve mapear portas apropriadas, dependências entre serviços, volumes para persistência de dados e compartilhamento de código para desenvolvimento.
-  
+
 ```yml
 services:
 
@@ -197,12 +202,11 @@ volumes:
   postgres_data:
 ```
 
-# 5. Configuração do `database.yml`
+## 5. Configuração do `database.yml`
 
-No Rails, configure `database.yml` para usar variáveis de ambiente (`DATABASE_URL`) sempre que possível, dentro do bloco `default`.  
+No Rails, configure `database.yml` para usar variáveis de ambiente (`DATABASE_URL`) sempre que possível, dentro do bloco `default`. &#x20;
 
 Isso permite reutilizar configurações entre ambientes (desenvolvimento, teste, produção) com menor duplicação.
-
 
 Configure:
 
@@ -218,18 +222,19 @@ development:
   database: app_development # Nome do banco de desenvolvimento usando também no docker-compose.yml
 ```
 
-# 6. Scripts de setup (`.sh`)
+## 6. Scripts de setup (`.sh`)
 
 Crie scripts como `config/setup_app.sh` ou `.sh` em `config` que:
 
-- garantam que todas `gems` estejam instaladas (`bundle install`)
-- removam `PID` antigo de servidor, se existir
-- rodem migrações em ambientes que não sejam desenvolvimento
-- compilem ativos quando apropriado
-- finalmente executem o servidor ou comando desejado do container
+* garantam que todas `gems` estejam instaladas (`bundle install`)
+* removam `PID` antigo de servidor, se existir
+* rodem migrações em ambientes que não sejam desenvolvimento
+* compilem ativos quando apropriado
+* finalmente executem o servidor ou comando desejado do container
 
 Isso permite que o container se auto ajuste quando ligado ou reiniciado, e evita erros comuns de “PID já existe” ou migrações esquecidas.
-- Crie o  arquivo `setup.sh` dentro do diretório `config` e adicione o código:
+
+* Crie o arquivo `setup.sh` dentro do diretório `config` e adicione o código:
 
 ```shell
 #! /bin/sh
@@ -257,26 +262,26 @@ fi
 exec "$@" # executa o command do container
 ```
 
-- Depois execute o comando no terminal para dar permisão ao arquivo `/config/setup.sh`:
+* Depois execute o comando no terminal para dar permisão ao arquivo `/config/setup.sh`:
 
 ```bash
 chmod +x config/setup.sh
 ```
 
-# 7. Passos de build e execução
+## 7. Passos de build e execução
 
 1. `docker compose build` – constrói as imagens conforme configurado.
 2. `docker compose up` – sobe os serviços conforme `docker-compose.yml`.
 3. Verifique se os containers estão ativos com `docker ps`.
 4. Caso necessário, entre no container da aplicação (`docker exec -it <nome_do_container_web> bash`) para criar banco e rodar migrações: `rails db:create`, `rails db:migrate`.
 
-- No termina na raiz do seu projeto rode o comando:
+* No termina na raiz do seu projeto rode o comando:
 
 ```bash
 docker compose build
 ```
 
-- O Terminal deve retornar algo semelhante a imagem a baixo com a mensagem:
+* O Terminal deve retornar algo semelhante a imagem a baixo com a mensagem:
 
 ```bash
 [+] Building 1/1
@@ -285,13 +290,13 @@ docker compose build
 
 ![screenshot do sistema](20250916235622.png)
 
-- Agora para subir o servidor na porta 300 rode o comando:
+* Agora para subir o servidor na porta 300 rode o comando:
 
 ```bash
 docker compose up
 ```
 
-- Deve retornar algo semelhante a imagem com a mensagem de que o servidor esta na porta 3000:
+* Deve retornar algo semelhante a imagem com a mensagem de que o servidor esta na porta 3000:
 
 ```bash
 Listening on http://0.0.0.0:3000
@@ -299,52 +304,54 @@ Listening on http://0.0.0.0:3000
 
 ![screenshot do sistema](20250916235944.png)
 
-- Agora você pode abrir seu navegador na rota informada e deve retornar uma mensagem erro por falta de criação do banco de dados, algo semelhante a imagem:
+* Agora você pode abrir seu navegador na rota informada e deve retornar uma mensagem erro por falta de criação do banco de dados, algo semelhante a imagem:
 
 ![screenshot do sistema](20250917000236.png)
 
-# 8. Criando migração no db dentro do Docker
+## 8. Criando migração no db dentro do Docker
 
-- após subir o servidor você pode verificar quais containers estão em execução, em um novo terminal sem fechar o terminal que subiu o `docker` rode  o comando para saber o nome dos containers `on`:
+* após subir o servidor você pode verificar quais containers estão em execução, em um novo terminal sem fechar o terminal que subiu o `docker` rode o comando para saber o nome dos containers `on`:
+
 ```bash
 docker ps
 ```
 
-- Este comando ovai retornar uma menagem no terminal semelhante a imagem a baixo, e no campo `NAME` vai ter o nome dos containers em execução, algo semelhante a imagem a baixo, se tiver criado o container de `test` ele também deve parecer:
+* Este comando ovai retornar uma menagem no terminal semelhante a imagem a baixo, e no campo `NAME` vai ter o nome dos containers em execução, algo semelhante a imagem a baixo, se tiver criado o container de `test` ele também deve parecer:
 
 ![screenshot do sistema](20250917000752.png)
 
-- Agora acesse o container web que em nosso caso se chama `app-web-1`, para acesso digite o comando no terminal:
+* Agora acesse o container web que em nosso caso se chama `app-web-1`, para acesso digite o comando no terminal:
+
 ```bash
 docker exec -it app-web-1 bash
 ```
 
-- Agora ao acessar o terminal do `docker` podemos criar nosso banco e rodar as migrações por lá com os comandos:
-- assim criamos o banco de dados:
+* Agora ao acessar o terminal do `docker` podemos criar nosso banco e rodar as migrações por lá com os comandos:
+* assim criamos o banco de dados:
 
 ```bash
 bundle exec rails db:create
 ```
 
-- assim rodamos migrações no banco:
+* assim rodamos migrações no banco:
 
 ```bash
 bundle exec rails db:migrate
 ```
 
-- Ao cria o banco de dados de retornar algo como:
+* Ao cria o banco de dados de retornar algo como:
 
 ![screenshot do sistema](20250917001735.png)
 
-- agora sim a página root do `Rails 8` deve abrir em seu navegador:
+* agora sim a página root do `Rails 8` deve abrir em seu navegador:
 
 ![screenshot do sistema](20250917001819.png)
 
-# 9. Finalização e próximos passos
+## 9. Finalização e próximos passos
 
 Depois que tudo estiver funcionando no ambiente de desenvolvimento, você pode:
 
-- adicionar containers dedicados para `workers` (`sidekiq`)
-- configurar supervisão ou `health checks`
-- preparar configuração de produção (variáveis, segurança, assets etc...)
-- documentar como executar testes automatizados, `lint` e outras ferramentas de qualidade de código
+* adicionar containers dedicados para `workers` (`sidekiq`)
+* configurar supervisão ou `health checks`
+* preparar configuração de produção (variáveis, segurança, assets etc...)
+* documentar como executar testes automatizados, `lint` e outras ferramentas de qualidade de código
