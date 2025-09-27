@@ -10,23 +10,23 @@
 
 4. Visão Geral da `Stack`:
 
-&#x20;   \- Componentes principais utilizados neste setup:
+\- Componentes principais utilizados neste setup:
 
-&#x20;   \- `Ruby 3.4.5`
+\- `Ruby 3.4.5`
 
-&#x20;   \- `Rails 8`
+\- `Rails 8`
 
-&#x20;   \- `Postgresql 15.7`
+\- `Postgresql 15.7`
 
-&#x20;   \- `redis 7.0`
+\- `redis 7.0`
 
-&#x20;   \- `Sidekiq 7.0`
+\- `Sidekiq 7.0`
 
-&#x20;   \- `RSpec 7.0`
+\- `RSpec 7.0`
 
-&#x20;   \- `Node.js 20.x`
+\- `Node.js 20.x`
 
-&#x20;   \- `Yarn 1.22.1`
+\- `Yarn 1.22.1`
 
 ## 1. Instalação de Gems Necessárias
 
@@ -40,6 +40,7 @@ group :development, :test do
   gem "rspec-rails", "~> 7.0"
 end
 ```
+
 * Adiciona a gem `sidekiq`:
 
 ```rb
@@ -128,7 +129,7 @@ DATABASE_URL=postgres://postgres:postgres@db:5432/app_development
 RAILS_ENV=development
 ```
 
-* Crie o arquivo `.env`, para configurar  as variáveis  de `usario` e senha do `postgres`:
+* Crie o arquivo `.env`, para configurar as variáveis de `usario` e senha do `postgres`:
 
 ```bash
 POSTGRES_USER=postgres
@@ -148,8 +149,8 @@ O `docker-compose.yml` define os serviços necessários:
 
 * `web` (sua aplicação Rails)
 * `db` (PostgreSQL)
-* `test` (ambiente de teste) &#x20;
-* `redis` &#x20; (cache e backend para Sidekiq)
+* `test` (ambiente de teste)
+* `redis` (cache e backend para Sidekiq)
 * `sidekiq` (trabalhador de background)
 
 Deve mapear portas apropriadas, dependências entre serviços, volumes para persistência de dados e compartilhamento de código para desenvolvimento.
@@ -216,7 +217,7 @@ volumes:
 
 ## 5. Configuração do `database.yml`
 
-No Rails, configure `database.yml` para usar variáveis de ambiente (`DATABASE_URL`) sempre que possível, dentro do bloco `default`. &#x20;
+No Rails, configure `database.yml` para usar variáveis de ambiente (`DATABASE_URL`) sempre que possível, dentro do bloco `default`.
 
 Isso permite reutilizar configurações entre ambientes (desenvolvimento, teste, produção) com menor duplicação.
 
@@ -283,8 +284,7 @@ chmod +x config/setup.sh
 ## 7. Configurando Docker para sidekiq no Rails 8
 
 * Vamos configurar o **worker** que executará o **Sidekiq**. Primeiro, na raiz do projeto, crie um diretório chamado `/worker`. Em seguida, dentro desse novo diretório, crie um arquivo chamado `Dockerfile`.
-
-- Adicione o código:
+* Adicione o código:
 
 ```dockerfile
 # syntax=docker/dockerfile:1
@@ -336,6 +336,7 @@ set -e
 
 exec bundle exec sidekiq -c 1#!/bin/sh
 ```
+
 ## 8. Configurando as rotas do sidekiq.
 
 * No arquivo `routes` adicione estas configurações:
@@ -347,8 +348,8 @@ Rails.application.routes.draw do
  mount Sidekiq::Web => "/sidekiq" # monitoramento do sidekiq
 end
 ```
-* Agora você vai conseguir monitorar o sidekiq na rota: `http://127.0.0.1:3000/sidekiq`
 
+* Agora você vai conseguir monitorar o sidekiq na rota: `http://127.0.0.1:3000/sidekiq`
 * Adicione o código no seu `development.rb` para remover algumas mensagens do console relacionado ao sidekiq:
 
 ```ruby
@@ -357,7 +358,7 @@ Rails.application.configure do
 end
 ```
 
-## 8. Passos de build e execução
+## 9. Passos de build e execução
 
 1. `docker compose build` – constrói as imagens conforme configurado.
 2. `docker compose up` – sobe os serviços conforme `docker-compose.yml`.
@@ -397,7 +398,7 @@ Listening on http://0.0.0.0:3000
 
 ![screenshot do sistema](20250917000236.png)
 
-## 9. Criando migração no db dentro do Docker
+## 10. Criando migração no db dentro do Docker
 
 * após subir o servidor você pode verificar quais containers estão em execução, em um novo terminal sem fechar o terminal que subiu o `docker` rode o comando para saber o nome dos containers `on`:
 
@@ -436,7 +437,15 @@ bundle exec rails db:migrate
 
 ![screenshot do sistema](20250917001819.png)
 
-## 10. Finalização e próximos passos
+
+
+* Rodando os testes
+
+```
+docker compose run --rm test
+```
+
+## 11. Finalização e próximos passos
 
 Depois que tudo estiver funcionando no ambiente de desenvolvimento, você pode:
 
