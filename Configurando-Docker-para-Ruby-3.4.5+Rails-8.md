@@ -135,7 +135,6 @@ POSTGRES_PASSWORD=postgres
 
 ```bash
 DATABASE_URL=postgres://postgres:postgres@db:5432/app_test
-REDIS_URL=redis://redis:6379/10
 RAILS_ENV=test
 ```
 
@@ -146,7 +145,7 @@ O `docker-compose.yml` define os serviços necessários:
 * `web` (sua aplicação Rails)
 * `db` (PostgreSQL)
 * `test` (ambiente de teste) &#x20;
-* `redis`
+* `redis` &#x20;
 * `sidekiq`
 
 Deve mapear portas apropriadas, dependências entre serviços, volumes para persistência de dados e compartilhamento de código para desenvolvimento.
